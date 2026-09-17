@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Report Form</title>
+    <style>
+        :root {
+            --primary-color: #0078d4; /* Microsoft accessible blue */
+            --text-color: #242424;
+            --bg-color: #f3f2f1;
+            --border-color: #8a8886;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .form-container {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 { 
+            font-size: 1.6rem; 
+            margin-top: 0; 
+            color: #000; 
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        legend {
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 0 10px;
+            color: var(--primary-color);
+        }
+        .form-group { margin-bottom: 15px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        /* Text input and Select enhancements */
+        input[type="text"], 
+        input[type="tel"], 
+        input[type="date"], 
+        select, 
+        textarea, 
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 1px;
+        }
+
+        /* Accessible radio & checkbox styling for mobile fingers */
+        .choice-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .choice-group input[type="radio"], 
+        .choice-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .choice-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        /* Mobile optimization for file upload button */
+        input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            border: 1px solid var(--primary-color);
+            background: #fff;
+            color: var(--primary-color);
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button[type="submit"]:focus {
+            outline: 3px solid #000;
+        }
+        .status-message {
+            margin-top: 15px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .required { color: red; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>INCIDENT REPORT FORM</h1>
+    
+    <form id="incidentForm">
+        
+        <!-- SECTION 1: REPORTED BY -->
+        <fieldset>
+            <legend>Reported By</legend>
+            <div class="form-group">
+                <label for="reporterName">Name <span class="required">*</span></label>
+                <input type="text" id="reporterName" required aria-required="true" autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label for="reporterMobile">Mobile Number <span class="required">*</span></label>
+                <input type="tel" id="reporterMobile" required aria-required="true" autocomplete="tel">
+            </div>
+            <div class="form-group">
+                <label for="dateReported">Date Reported <span class="required">*</span></label>
+                <input type="date" id="dateReported" required aria-required="true">
+            </div>
+        </fieldset>
+
+        <!-- SECTION 2: TYPE OF INCIDENT -->
+        <fieldset>
+            <legend>Type of Incident <span class="required">*</span></legend>
+            <div class="choice-group">
+                <input type="radio" id="typeInjury" name="incidentType" value="Physical injury" required>
+                <label for="typeInjury">Physical injury</label>
+            </div>
+            <div class="choice-group">
+                <input type="radio" id="typeVehicle" name="incidentType" value="Vehicle accident">
+                <label for="typeVehicle">Vehicle accident</label>
+            </div>
+            <div class="choice-group">
+                <input type="radio" id="typeMiss" name="incidentType" value="Near miss">
+                <label for="typeMiss">Near miss</label>
+            </div>
+        </fieldset>
+
+        <!-- SECTION 3: PERSONAL DETAILS -->
+        <fieldset>
+            <legend>Personal Details (Person Involved)</legend>
+            <div class="form-group">
+                <label for="involvedName">Name of person/s involved</label>
+                <input type="text" id="involvedName">
+            </div>
+            <div class="form-group">
+                <label for="involvedMobile">Mobile Number</label>
+                <input type="tel" id="involvedMobile">
+            </div>
+            <div class="form-group">
+                <label for="involvedEmployer">Employer</label>
+                <input type="text" id="involvedEmployer">
+            </div>
+            <div class="form-group">
+                <label for="dateOfIncident">Date of Incident</label>
+                <input type="date" id="dateOfIncident">
+            </div>
+        </fieldset>
+
+        <!-- SECTION 4: TYPE OF INJURY -->
+        <fieldset>
+            <legend>Type of Injury (If applicable)</legend>
+            <div class="choice-group">
+                <input type="checkbox" id="injuryBurn" name="injuryType" value="Burn">
+                <label for="injuryBurn">Burn</label>
+            </div>
+            <div class="choice-group">
+                <input type="checkbox" id="injuryFracture" name="injuryType" value="Fractures">
+                <label for="injuryFracture">Fractures</label>
+            </div>
+            <div class="choice-group">
+                <input type="checkbox" id="injurySprain" name="injuryType" value="Sprain/strain">
+                <label for="injurySprain">Sprain/strain</label>
+            </div>
+            <div class="choice-group">
+                <input type="checkbox" id="injuryWound" name="injuryType" value="Open wound">
+                <label for="injuryWound">Open wound</label>
+            </div>
+            <div class="choice-group">
+                <input type="checkbox" id="injuryConcussion" name="injuryType" value="Concussion">
+                <label for="injuryConcussion">Concussion</label>
+            </div>
+            <div class="choice-group">
+                <input type="checkbox" id="injurySuperficial" name="injuryType" value="Superficial injury">
+                <label for="injurySuperficial">Superficial injury</label>
+            </div>
+        </fieldset>
+
+        <!-- SECTION 5: DETAILS -->
+        <fieldset>
+            <legend>Details of Incident <span class="required">*</span></legend>
+            <div class="form-group">
+                <label for="incidentDetails">Please explain who, what, where, when and how:</label>
+                <textarea id="incidentDetails" rows="6" required aria-required="true"></textarea>
+            </div>
+        </fieldset>
+
+        <!-- SECTION 6: OUTCOME -->
+        <fieldset>
+            <legend>Outcome of Incident</legend>
+            <div class="choice-group">
+                <input type="radio" id="outcomeDoctor" name="incidentOutcome" value="Taken to doctor">
+                <label for="outcomeDoctor">Taken to doctor</label>
+            </div>
+            <div class="choice-group">
+                <input type="radio" id="outcomeHospital" name="incidentOutcome" value="Taken to hospital">
+                <label for="outcomeHospital">Taken to hospital</label>
+            </div>
+            <div class="choice-group">
+                <input type="radio" id="outcomeFirstAid" name="incidentOutcome" value="First aid applied">
+                <label for="outcomeFirstAid">First aid applied</label>
+            </div>
+            <div class="choice-group">
+                <input type="radio" id="outcomeHome" name="incidentOutcome" value="Employee sent home to recuperate">
+                <label for="outcomeHome">Employee sent home to recuperate</label>
+            </div>
+        </fieldset>
+
+        <!-- SECTION 7: WITNESSES -->
+        <fieldset>
+            <legend>Witness Details</legend>
+            <div class="form-group" style="margin-bottom: 20px; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px;">
+                <label for="witness1Name">Witness 1 Name</label>
+                <input type="text" id="witness1Name" style="margin-bottom: 10px;">
+                <label for="witness1Mobile">Witness 1 Mobile Number</label>
