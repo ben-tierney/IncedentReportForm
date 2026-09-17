@@ -253,10 +253,117 @@
             </div>
         </fieldset>
 
-        <!-- SECTION 7: WITNESSES -->
+         <!-- SECTION 7: WITNESSES -->
         <fieldset>
             <legend>Witness Details</legend>
             <div class="form-group" style="margin-bottom: 20px; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px;">
                 <label for="witness1Name">Witness 1 Name</label>
                 <input type="text" id="witness1Name" style="margin-bottom: 10px;">
                 <label for="witness1Mobile">Witness 1 Mobile Number</label>
+                <input type="tel" id="witness1Mobile">
+            </div>
+            <div class="form-group">
+                <label for="witness2Name">Witness 2 Name</label>
+                <input type="text" id="witness2Name" style="margin-bottom: 10px;">
+                <label for="witness2Mobile">Witness 2 Mobile Number</label>
+                <input type="tel" id="witness2Mobile">
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Attachments</legend>
+            <div class="form-group">
+                <label for="fileUpload">Upload Photos or Documents</label>
+                <input type="file" id="fileUpload" accept="image/*,application/pdf">
+            </div>
+        </fieldset>
+
+        <button type="submit">Submit Incident Report</button>
+        <div id="status" class="status-message" role="status" aria-live="polite"></div>
+    </form>
+</div>
+
+<script>
+    // PASTE YOUR POWER AUTOMATE HTTP URL HERE 
+    const webhookUrl = "https://defaultbfb72bc2b4744f8398fb1a61d4008d.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/806207fc6c7345029e85a5e9a7a1e5cf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qtHECK-2OKNWJujvRXy3aOwIU0Mg1zhJDWZbsThDFI4";
+
+    // Set today's date automatically as default on load
+    document.getElementById('dateReported').valueAsDate = new Date();
+
+    document.getElementById('incidentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const statusDiv = document.getElementById('status');
+        statusDiv.style.display = 'block';
+        statusDiv.style.backgroundColor = '#fff2cc';
+        statusDiv.style.color = '#333';
+        statusDiv.innerText = "Submitting report safely...";
+
+        const fileInput = document.getElementById('fileUpload');
+        let base64File = "";
+        let fileName = "";
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileName = file.name;
+            base64File = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Strips the data URI header scheme so it's just raw base64 data
+                    resolve(reader.result.split(',')[1]);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Gather multiple checkbox values for Injury Type
+        const checkedInjuries = [];
+        document.querySelectorAll('input[name="injuryType"]:checked').forEach((checkbox) => {
+            checkedInjuries.push(checkbox.value);
+        });
+
+        const payload = {
+            reporterName: document.getElementById('reporterName').value,
+            reporterMobile: document.getElementById('reporterMobile').value,
+            dateReported: document.getElementById('dateReported').value,
+            incidentType: document.querySelector('input[name="incidentType"]:checked')?.value || "",
+            involvedName: document.getElementById('involvedName').value || "",
+            involvedMobile: document.getElementById('involvedMobile').value || "",
+            involvedEmployer: document.getElementById('involvedEmployer').value || "",
+            dateOfIncident: document.getElementById('dateOfIncident').value || "",
+            injuryTypes: checkedInjuries.join(', '),
+            incidentDetails: document.getElementById('incidentDetails').value,
+            incidentOutcome: document.querySelector('input[name="incidentOutcome"]:checked')?.value || "",
+            witness1Name: document.getElementById('witness1Name').value || "",
+            witness1Mobile: document.getElementById('witness1Mobile').value || "",
+            witness2Name: document.getElementById('witness2Name').value || "",
+            witness2Mobile: document.getElementById('witness2Mobile').value || "",
+            fileName: fileName,
+            fileContent: base64File
+        };
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                statusDiv.style.backgroundColor = '#d4edda';
+                statusDiv.style.color = '#155724';
+                statusDiv.innerText = "Success! The incident report has been securely logged.";
+                document.getElementById('incidentForm').reset();
+                document.getElementById('dateReported').valueAsDate = new Date();
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            statusDiv.style.backgroundColor = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+            statusDiv.innerText = "Submission failed. Please check network connection and try again.";
+        }
+    });
+</script>
+
+</body>
+</html>
