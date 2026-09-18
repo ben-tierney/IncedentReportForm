@@ -138,7 +138,22 @@
     <h1>INCIDENT REPORT FORM</h1>
     
     <form id="incidentForm">
-        
+        <!-- Site: set automatically from the QR code -->
+        <input type="hidden" id="siteCode" name="siteCode" value="">
+            <div id="sitePicker" class="section" style="display:none;">
+                <label for="siteSelect">Which site are you reporting for?</label>
+                <select id="siteSelect">
+    <option value="">-- select a site --</option>
+    <option value="AGKC">Andreasens Green Kemps Creek</option>
+    <option value="AGMM">Andreasens Green Mangrove Mountain</option>
+    <option value="AGLV">Andreasens Green Lansvale</option>
+    <option value="ELLI">Ellisons</option>
+    <option value="ALAL">Alpine Alstonville</option>
+    <option value="ALDU">Alpine Dural</option>
+    <option value="OASP">Oasis Springwood</option>
+    <option value="OACR">Oasis Cranbourne</option>
+  </select>
+</div>
         <!-- SECTION 1: REPORTED BY -->
         <fieldset>
             <legend>Reported By</legend>
@@ -286,7 +301,37 @@
 <script>
     // PASTE YOUR POWER AUTOMATE HTTP URL HERE 
     const webhookUrl = "https://defaultbfb72bc2b4744f8398fb1a61d4008d.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/806207fc6c7345029e85a5e9a7a1e5cf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qtHECK-2OKNWJujvRXy3aOwIU0Mg1zhJDWZbsThDFI4";
+    const SITES = {
+  AGKC: "Andreasens Green Kemps Creek",
+  AGMM: "Andreasens Green Mangrove Mountain",
+  AGLV: "Andreasens Green Lansvale",
+  ELLI: "Ellisons",
+  ALAL: "Alpine Alstonville",
+  ALDU: "Alpine Dural",
+  OASP: "Oasis Springwood",
+  OACR: "Oasis Cranbourne"
+};
 
+const siteCodeInput = document.getElementById('siteCode');
+const siteSelect    = document.getElementById('siteSelect');
+let currentSiteCode = '';
+
+(function initSite() {
+  const code = (new URLSearchParams(location.search).get('site') || '').trim().toUpperCase();
+
+  if (SITES[code]) {
+    currentSiteCode = code;
+    siteCodeInput.value = code;
+    document.getElementById('siteBannerName').textContent = SITES[code];
+    document.getElementById('siteBanner').style.display = 'block';
+  } else {
+    document.getElementById('sitePicker').style.display = 'block';
+    siteSelect.addEventListener('change', function () {
+      currentSiteCode = siteSelect.value;
+      siteCodeInput.value = siteSelect.value;
+    });
+  }
+})();
     // Set today's date automatically as default on load
     document.getElementById('dateReported').valueAsDate = new Date();
 
@@ -304,6 +349,13 @@
         let fileName = "";
 
         const proceedWithSubmit = () => {
+            const siteNameValue = SITES[siteCodeInput.value];
+if (!siteNameValue) {
+    statusDiv.style.backgroundColor = '#f8d7da';
+    statusDiv.style.color = '#721c24';
+    statusDiv.innerText = "Please select which site this report is for.";
+    return;
+}
             const checkedInjuries = [];
             document.querySelectorAll('input[name="injuryType"]:checked').forEach((checkbox) => {
                 checkedInjuries.push(checkbox.value);
@@ -325,6 +377,8 @@
                 witness1Mobile: document.getElementById('witness1Mobile').value || "",
                 witness2Name: document.getElementById('witness2Name').value || "",
                 witness2Mobile: document.getElementById('witness2Mobile').value || "",
+                siteCode: siteCodeInput.value,
+                siteName: siteNameValue,
                 fileName: fileName,
                 fileContent: base64File
             };
@@ -336,12 +390,14 @@
             
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
-                    if (xhr.status === 200 || xhr.status === 202) {
-                        statusDiv.style.backgroundColor = '#d4edda';
-                        statusDiv.style.color = '#155724';
-                        statusDiv.innerText = "Success! The incident report has been securely logged.";
-                        document.getElementById('incidentForm').reset();
-                        document.getElementById('dateReported').valueAsDate = new Date();
+                   if (xhr.status === 200 || xhr.status === 202) {
+                    statusDiv.style.backgroundColor = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    statusDiv.innerText = "Success! The incident report has been securely logged.";
+                    document.getElementById('incidentForm').reset();
+                    document.getElementById('dateReported').valueAsDate = new Date();
+                    siteCodeInput.value = currentSiteCode;
+                    if (siteSelect) siteSelect.value = currentSiteCode;
                     } else {
                         statusDiv.style.backgroundColor = '#f8d7da';
                         statusDiv.style.color = '#721c24';
