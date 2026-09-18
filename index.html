@@ -99,6 +99,42 @@ outline: 3px solid var(--primary-color);
 outline-offset: 1px;
 }
 
+/* Nothing in the form may exceed its container */
+input, select, textarea { max-width: 100%; }
+
+/* iOS Safari gives date inputs an intrinsic width from the native control and
+   ignores box-sizing, so width:100% alone lets them spill past the fieldset.
+   Stripping the native appearance and allowing the box to shrink fixes it. */
+input[type="date"] {
+-webkit-appearance: none;
+appearance: none;
+display: block;
+min-width: 0;
+}
+input[type="date"]::-webkit-date-and-time-value {
+text-align: left;
+margin: 0;
+min-width: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+margin-left: auto;
+flex-shrink: 0;
+}
+
+/* A long filename can push the file input wide the same way */
+input[type="file"] {
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+/* Reclaim horizontal space on small screens */
+@media (max-width: 480px) {
+body { padding: 10px; }
+.form-container { padding: 18px 15px; }
+fieldset { padding: 15px 12px; }
+legend { font-size: 1rem; }
+}
+
 /* Accessible radio & checkbox styling for mobile fingers */
 .choice-group {
 display: flex;
@@ -353,7 +389,7 @@ border-radius: 4px;
 // Power Automate > Incident Report - Intake > Edit > click the
 // "manual" trigger > copy the HTTP URL field.
 // ============================================================
-const webhookUrl = "https://defaultbfb72bc2b4744f8398fb1a61d4008d.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/09/workflows/da53193f4393426fa7633feae690901f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SYCddLLD8txcubbKBmxJl2SDKOZlt_6BxqLz6K0LGxY";
+const webhookUrl = "https://defaultbfb72bc2b4744f8398fb1a61d4008d.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/806207fc6c7345029e85a5e9a7a1e5cf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qtHECK-2OKNWJujvRXy3aOwIU0Mg1zhJDWZbsThDFI4";
 
 const SITES = {
 AGKC: "Andreasens Green Kemps Creek",
